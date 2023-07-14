@@ -4,20 +4,33 @@
     <meta name="viewport" content="width=device-width" />
     <title>Single-Page Web Application</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+    <script type="text/javascript">
+
+        function addRows() {
+            var table = document.getElementById('ItemAdd');
+            var rowCount = table.rows.length;
+            var cellCount = table.rows[0].cells.length;
+            var row = table.insertRow(rowCount);
+            for (var i = 0; i <= cellCount; i++) {
+                var cell = 'cell' + i;
+                cell = row.insertCell(i);
+                var copycel = document.getElementById('col' + i).innerHTML;
+                cell.innerHTML = copycel;
+            }
+        }
         $(document).ready(function () {
             $('#addItemButton').click(function () {
                 var itemCount = $('.item').length;
                 var newItemHtml = `
-                                    <div class="item">
-                                        <label for="Items[${itemCount}].ItemId">Item ${itemCount}:</label>
-                                        <select id="Items[${itemCount}].ItemId" name="Items[${itemCount}].ItemId">
-                                            <option value="">Select an item</option>
-                                        </select><br><br>
-                                        <label for="Items[${itemCount}].Quantity">Item ${itemCount} Quantity:</label>
-                                        <input type="text" id="Items[${itemCount}].Quantity" name="Items[${itemCount}].Quantity"><br><br>
-                                    </div>
-                                `;
+                                                            <div class="item">
+                                                                <label for="Items[${itemCount}].ItemId">Item ${itemCount}:</label>
+                                                                <select id="Items[${itemCount}].ItemId" name="Items[${itemCount}].ItemId">
+                                                                    <option value="">Select an item</option>
+                                                                </select><br><br>
+                                                                <label for="Items[${itemCount}].Quantity">Item ${itemCount} Quantity:</label>
+                                                                <input type="text" id="Items[${itemCount}].Quantity" name="Items[${itemCount}].Quantity"><br><br>
+                                                            </div>
+                                                        `;
                 $('#itemContainer').append(newItemHtml);
             });
 
@@ -27,7 +40,7 @@
                 type: 'GET',
                 async: true,
                 success: function (customers) {
-                   
+
                     var customerSelect = $('#CustomerId');
                     customerSelect.empty();
                     $.each(customers, function (index, customer) {
@@ -36,10 +49,28 @@
                 }
             });
 
-         
+            $.ajax({
+                url: '/Home/GetItems',
+                async: true,
+                type: 'GET',
+                success: function (items) {
+                    var itemSelect = $('#ItemId');
+                    itemSelect.empty();
+                    $.each(items, function (index, item) {
+                        itemSelect.append($('<option></option>').val(item.itemId).text(item.name).data('price', item.price));
+                    });
+                },
+                error: function (err) {
+                    console.log("Error", err);
+                }
+            });
 
-            $('#itemContainer').on('change', 'select[id^="Items"]', function () {
+
+            $('#ItemId').on('change', 'select[id^="Items"]', function () {
+
                 var selectedItemId = $(this).val();
+
+                console.log("selectedItemId" + selectedItemId);
                 var currentSelect = $(this);
 
                 $.ajax({
@@ -47,6 +78,7 @@
                     type: 'GET',
                     data: { itemId: selectedItemId },
                     success: function (item) {
+                        console.log(item);
                         var itemQuantityInput = currentSelect.parent().find('input[id$=".Quantity"]');
                         itemQuantityInput.val(item.quantity);
                     }
@@ -57,17 +89,45 @@
 </head>
 <body>
     <h1>Single-Page Web Application</h1>
-    <form asp-action="YourApiEndpoint" method="post">
+    <form asp-action="#" method="post">
         <label asp-for="CustomerId">Customer:</label>
         <select asp-for="CustomerId" id="CustomerId"></select><br><br>
-        @await Html.PartialAsync("_partialItem")
-      @*  <div id="itemContainer">
-            <div class="item">
-                <label asp-for="Items[0].ItemId">Item 0:</label>
-                <select asp-for="Items[0].ItemId"></select><br><br>
-                <label asp-for="Items[0].Quantity">Item 0 Quantity:</label>
-                <input asp-for="Items[0].Quantity" /><br><br>
-            </div>
+
+        <div>
+            <table id="ItemAdd" class="table table-bordered w-100" cellspacing="0">
+                <thead>
+                    <tr>
+                        <td>Item</td>
+                        <td>Quantity</td>
+                        <td>Price</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="col0">
+                            <select asp-for="ItemId" id="ItemId"></select><br><br>
+                        </td>
+                        <td id="col1">
+                            <input type="text" />
+                        </td>
+                        <td id="col2">
+                            <span id="Price"></span>
+                        </td>
+                        <td id="col3">
+                            <input type="button" value="Add Row" onclick="addRows();" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @*  @await Html.PartialAsync("_partialItem")*@
+        @*  <div id="itemContainer">
+        <div class="item">
+        <label asp-for="Items[0].ItemId">Item 0:</label>
+        <select asp-for="Items[0].ItemId"></select><br><br>
+        <label asp-for="Items[0].Quantity">Item 0 Quantity:</label>
+        <input asp-for="Items[0].Quantity" /><br><br>
+        </div>
         </div>*@
 
         <button type="button" id="addItemButton">Add Item</button><br><br>
