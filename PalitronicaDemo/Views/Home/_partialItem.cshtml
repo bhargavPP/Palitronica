@@ -1,0 +1,56 @@
+﻿<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div>
+    <table id="ItemAdd" class="table table-bordered w-100" cellspacing="0">
+        <thead>
+            <tr>
+                <td>Item</td>
+                <td>Quantity</td>
+                <td>Price</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <select asp-for="ItemId" id="ItemId"  ></select><br><br>
+                </td>
+                <td>
+                    <input type="text" />
+                </td>
+                <td>
+                    <span id="Price"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        console.log("Items");
+        // Load items using AJAX
+        $.ajax({
+            url: '/Home/GetItems',
+            async: true,
+            type: 'GET',
+            success: function (items) {
+                var itemSelect = $('#ItemId');
+                itemSelect.empty();
+                $.each(items, function (index, item) {
+                    itemSelect.append($('<option></option>').val(item.itemId).text(item.name).data('price', item.price));
+                });
+
+                itemSelect.trigger('change'); // Trigger the change event to update the initial price
+            },
+            error: function (err) {
+                console.log("Error", err);
+            }
+        });
+
+        $('#ItemId').on('change', function () {
+            var selectedOption = $(this).find('option:selected');
+            var price = selectedOption.attr('data-price');
+            $('#Price').text(price);
+        });
+    });
+
+</script>

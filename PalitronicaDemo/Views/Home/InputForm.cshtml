@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Single-Page Web Application</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#addItemButton').click(function () {
+                var itemCount = $('.item').length;
+                var newItemHtml = `
+                                    <div class="item">
+                                        <label for="Items[${itemCount}].ItemId">Item ${itemCount}:</label>
+                                        <select id="Items[${itemCount}].ItemId" name="Items[${itemCount}].ItemId">
+                                            <option value="">Select an item</option>
+                                        </select><br><br>
+                                        <label for="Items[${itemCount}].Quantity">Item ${itemCount} Quantity:</label>
+                                        <input type="text" id="Items[${itemCount}].Quantity" name="Items[${itemCount}].Quantity"><br><br>
+                                    </div>
+                                `;
+                $('#itemContainer').append(newItemHtml);
+            });
+
+            // Load customers and items using AJAX
+            $.ajax({
+                url: '/Home/GetCustomers',
+                type: 'GET',
+                async: true,
+                success: function (customers) {
+                   
+                    var customerSelect = $('#CustomerId');
+                    customerSelect.empty();
+                    $.each(customers, function (index, customer) {
+                        customerSelect.append($('<option></option>').val(customer.customerId).text(customer.customerName));
+                    });
+                }
+            });
+
+         
+
+            $('#itemContainer').on('change', 'select[id^="Items"]', function () {
+                var selectedItemId = $(this).val();
+                var currentSelect = $(this);
+
+                $.ajax({
+                    url: '/Home/GetItems',
+                    type: 'GET',
+                    data: { itemId: selectedItemId },
+                    success: function (item) {
+                        var itemQuantityInput = currentSelect.parent().find('input[id$=".Quantity"]');
+                        itemQuantityInput.val(item.quantity);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Single-Page Web Application</h1>
+    <form asp-action="YourApiEndpoint" method="post">
+        <label asp-for="CustomerId">Customer:</label>
+        <select asp-for="CustomerId" id="CustomerId"></select><br><br>
+        @await Html.PartialAsync("_partialItem")
+      @*  <div id="itemContainer">
+            <div class="item">
+                <label asp-for="Items[0].ItemId">Item 0:</label>
+                <select asp-for="Items[0].ItemId"></select><br><br>
+                <label asp-for="Items[0].Quantity">Item 0 Quantity:</label>
+                <input asp-for="Items[0].Quantity" /><br><br>
+            </div>
+        </div>*@
+
+        <button type="button" id="addItemButton">Add Item</button><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
