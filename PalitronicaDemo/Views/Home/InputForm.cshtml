@@ -22,15 +22,15 @@
             $('#addItemButton').click(function () {
                 var itemCount = $('.item').length;
                 var newItemHtml = `
-                                                            <div class="item">
-                                                                <label for="Items[${itemCount}].ItemId">Item ${itemCount}:</label>
-                                                                <select id="Items[${itemCount}].ItemId" name="Items[${itemCount}].ItemId">
-                                                                    <option value="">Select an item</option>
-                                                                </select><br><br>
-                                                                <label for="Items[${itemCount}].Quantity">Item ${itemCount} Quantity:</label>
-                                                                <input type="text" id="Items[${itemCount}].Quantity" name="Items[${itemCount}].Quantity"><br><br>
-                                                            </div>
-                                                        `;
+                                                                    <div class="item">
+                                                                        <label for="Items[${itemCount}].ItemId">Item ${itemCount}:</label>
+                                                                        <select id="Items[${itemCount}].ItemId" name="Items[${itemCount}].ItemId">
+                                                                            <option value="">Select an item</option>
+                                                                        </select><br><br>
+                                                                        <label for="Items[${itemCount}].Quantity">Item ${itemCount} Quantity:</label>
+                                                                        <input type="text" id="Items[${itemCount}].Quantity" name="Items[${itemCount}].Quantity"><br><br>
+                                                                    </div>
+                                                                `;
                 $('#itemContainer').append(newItemHtml);
             });
 
