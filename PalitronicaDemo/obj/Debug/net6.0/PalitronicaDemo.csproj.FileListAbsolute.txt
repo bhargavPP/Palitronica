@@ -83,3 +83,7 @@ D:\CORE\DemoTest\PalitronicaDemo\obj\Debug\net6.0\refint\PalitronicaDemo.dll
 D:\CORE\DemoTest\PalitronicaDemo\obj\Debug\net6.0\PalitronicaDemo.pdb
 D:\CORE\DemoTest\PalitronicaDemo\obj\Debug\net6.0\PalitronicaDemo.genruntimeconfig.cache
 D:\CORE\DemoTest\PalitronicaDemo\obj\Debug\net6.0\ref\PalitronicaDemo.dll
+D:\CORE\DemoTest\PalitronicaDemo\bin\Debug\net6.0\FluentAssertions.dll
+D:\CORE\DemoTest\PalitronicaDemo\bin\Debug\net6.0\Newtonsoft.Json.dll
+D:\CORE\DemoTest\PalitronicaDemo\bin\Debug\net6.0\RestSharp.dll
+D:\CORE\DemoTest\PalitronicaDemo\bin\Debug\net6.0\TaxJar.dll

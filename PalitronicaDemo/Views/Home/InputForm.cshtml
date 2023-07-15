@@ -18,21 +18,67 @@
                 cell.innerHTML = copycel;
             }
         }
-        $(document).ready(function () {
-            $('#addItemButton').click(function () {
-                var itemCount = $('.item').length;
-                var newItemHtml = `
-                                                                    <div class="item">
-                                                                        <label for="Items[${itemCount}].ItemId">Item ${itemCount}:</label>
-                                                                        <select id="Items[${itemCount}].ItemId" name="Items[${itemCount}].ItemId">
-                                                                            <option value="">Select an item</option>
-                                                                        </select><br><br>
-                                                                        <label for="Items[${itemCount}].Quantity">Item ${itemCount} Quantity:</label>
-                                                                        <input type="text" id="Items[${itemCount}].Quantity" name="Items[${itemCount}].Quantity"><br><br>
-                                                                    </div>
-                                                                `;
-                $('#itemContainer').append(newItemHtml);
+        function displayRate(event) {
+
+            $.ajax({
+                url: '/Home/GetItemsRate/',
+                async: true,
+                type: 'POST',
+                contentType: 'application/json', // Set the content type
+                data: event.value, // Convert the data to JSON
+                success: function (items) {
+
+                    var currentRow = event.closest('tr');
+                    var priceElement = currentRow.querySelector('#Price');
+                    priceElement.textContent = items.price;
+                },
+                error: function (err) {
+                    console.log("Error", err);
+                }
             });
+        }
+
+        function collectRowData() {
+            var rows = document.querySelectorAll('#ItemAdd tbody tr'); // Select all rows in the table body
+            var itemCollection = { Items: [] };
+
+            rows.forEach(function (row) {
+                var itemId = row.querySelector('#ItemId').value;
+                var quantity = row.querySelector('input[type="text"]').value;
+
+                // Create an Item object with the row data
+                var item = {
+                    itemId: itemId,
+                    quantity: quantity
+                };
+
+                itemCollection.Items.push(item); // Add the Item object to the Items property
+            });
+
+            return itemCollection;
+        }
+
+        function displayCombinedRate() {
+          
+            $.ajax({
+                url: '/Home/GetCustomerTaxRate/',
+                async: true,
+                type: 'POST',
+                contentType: 'application/json', // Set the content type
+                data: document.getElementById("CustomerId").value,
+                success: function (items) {
+
+                    //var currentRow = event.closest('tr');
+                    //var priceElement = currentRow.querySelector('#Price');
+                    //priceElement.textContent = items.price;
+                },
+                error: function (err) {
+                    console.log("Error", err);
+                }
+            });
+        }
+
+        $(document).ready(function () {
 
             // Load customers and items using AJAX
             $.ajax({
@@ -65,25 +111,6 @@
                 }
             });
 
-
-            $('#ItemId').on('change', 'select[id^="Items"]', function () {
-
-                var selectedItemId = $(this).val();
-
-                console.log("selectedItemId" + selectedItemId);
-                var currentSelect = $(this);
-
-                $.ajax({
-                    url: '/Home/GetItems',
-                    type: 'GET',
-                    data: { itemId: selectedItemId },
-                    success: function (item) {
-                        console.log(item);
-                        var itemQuantityInput = currentSelect.parent().find('input[id$=".Quantity"]');
-                        itemQuantityInput.val(item.quantity);
-                    }
-                });
-            });
         });
     </script>
 </head>
@@ -105,7 +132,7 @@
                 <tbody>
                     <tr>
                         <td id="col0">
-                            <select asp-for="ItemId" id="ItemId"></select><br><br>
+                            <select asp-for="ItemId" id="ItemId" onchange="displayRate(this)"></select><br><br>
                         </td>
                         <td id="col1">
                             <input type="text" />
@@ -120,17 +147,7 @@
                 </tbody>
             </table>
         </div>
-        @*  @await Html.PartialAsync("_partialItem")*@
-        @*  <div id="itemContainer">
-        <div class="item">
-        <label asp-for="Items[0].ItemId">Item 0:</label>
-        <select asp-for="Items[0].ItemId"></select><br><br>
-        <label asp-for="Items[0].Quantity">Item 0 Quantity:</label>
-        <input asp-for="Items[0].Quantity" /><br><br>
-        </div>
-        </div>*@
-
-        <button type="button" id="addItemButton">Add Item</button><br><br>
+        <button type="button" id="CaculateRate" onclick="displayCombinedRate()">Calculate Rate</button><br><br>
 
         <button type="submit">Submit</button>
     </form>
